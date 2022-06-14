@@ -1,0 +1,29 @@
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
+}
+
+group 'dev.necron'
+version '0.0.1'
+sourceCompatibility = 1.8
+compileJava.options.encoding = 'UTF-8'
+
+repositories {
+    maven { url 'https://jitpack.io' }
+    maven { url 'https://repo.codemc.org/repository/nms/' }
+}
+
+dependencies {
+    compileOnly 'org.spigotmc:spigot:1.8.8-R0.1-SNAPSHOT'
+    implementation 'com.github.hakan-krgn.hCore:bukkit-primary:0.4.7'
+}
+
+artifacts.archives(tasks.shadowJar)
+
+tasks.jar {
+    enabled = false
+}
+
+tasks.shadowJar {
+    archiveFileName.set(rootProject.name + "-" + version + ".jar")
+}

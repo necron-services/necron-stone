@@ -1,0 +1,7 @@
+name: 'NecronStone'
+author: 'Necron'
+website: 'https://necron.dev'
+version: 0.0.1
+api-version: 1.18
+description: 'This plugin made by Necron services!'
+main: dev.necron.stone.NecronStonePlugin
