@@ -108,7 +108,7 @@ public class NecronStone implements DatabaseObject {
     }
 
     public long getRemainTime() {
-        return (this.health == -1) ? (this.respawnAt.getTime() - System.currentTimeMillis()) : 0;
+        return (!this.isAlive()) ? (this.respawnAt.getTime() - System.currentTimeMillis()) : 0;
     }
 
     public boolean isAlive() {

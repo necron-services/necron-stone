@@ -1,7 +1,7 @@
 settings:
   default-health: 100 #default health of new created necron stone
   default-respawn-after: 120 #broken necron stone will regenerate after 120 seconds
-  reward-commands:
+  default-reward-commands:
     - 'give %player% diamond 1' #give a diamond to player
 
 hologram-active:

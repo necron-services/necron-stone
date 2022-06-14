@@ -10,7 +10,7 @@ public enum NecronStoneConfigContainer {
 
     HEALTH("settings.default-health", 100),
     RESPAWN_AFTER("settings.default-respawn-after", 120),
-    REWARD_COMMANDS("settings.reward-commands", new ArrayList<>()),
+    REWARD_COMMANDS("settings.default-reward-commands", new ArrayList<>()),
 
     HOLOGRAM_ACTIVE_HEIGHT("hologram-active.height", 0.5),
     HOLOGRAM_ACTIVE_LINES("hologram-active.lines", new ArrayList<>()),
