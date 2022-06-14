@@ -16,7 +16,6 @@ import java.util.concurrent.TimeUnit;
 
 public class NecronStone {
 
-    public static int DEFAULT_HEALTH = NecronStoneConfigContainer.HEALTH.asInt();
     public static long RESPAWN_AFTER = TimeUnit.SECONDS.toMillis(NecronStoneConfigContainer.RESPAWN_AFTER.asInt());
 
 
@@ -40,8 +39,8 @@ public class NecronStone {
         this.lastDamager = "-";
         this.location = location;
         this.rewards = rewards;
-        this.health = DEFAULT_HEALTH;
-        this.maxHealth = DEFAULT_HEALTH;
+        this.maxHealth = NecronStoneConfigContainer.HEALTH.asInt();
+        this.health = this.maxHealth;
         this.hologram = new NecronStoneHologram(this);
         this.action = new NecronStoneAction(this);
     }
@@ -109,7 +108,7 @@ public class NecronStone {
     public void respawn() {
         this.respawnAt = null;
         this.lastDamager = "-";
-        this.health = DEFAULT_HEALTH;
+        this.health = this.maxHealth;
         this.hologram.changeType(NecronStoneHologramType.ACTIVE);
     }
 
