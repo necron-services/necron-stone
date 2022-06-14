@@ -3,8 +3,8 @@ package dev.necron.stone;
 import dev.necron.stone.action.NecronStoneAction;
 import dev.necron.stone.configuration.config.NecronStoneConfigContainer;
 import dev.necron.stone.events.NecronStoneDestroyEvent;
+import dev.necron.stone.events.NecronStoneRespawnEvent;
 import dev.necron.stone.hologram.NecronStoneHologram;
-import dev.necron.stone.hologram.NecronStoneHologramType;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -16,19 +16,16 @@ import java.util.concurrent.TimeUnit;
 
 public class NecronStone {
 
-    public static long RESPAWN_AFTER = TimeUnit.SECONDS.toMillis(NecronStoneConfigContainer.RESPAWN_AFTER.asInt());
-
-
     private final UUID uid;
     private final int maxHealth;
     private final Location location;
-    private final NecronStoneHologram hologram;
     private final NecronStoneAction action;
 
     private int health;
     private Date respawnAt;
     private String lastDamager;
     private List<String> rewards;
+    private NecronStoneHologram hologram;
 
     public NecronStone(Location location) {
         this(location, new ArrayList<>());
@@ -41,8 +38,8 @@ public class NecronStone {
         this.rewards = rewards;
         this.maxHealth = NecronStoneConfigContainer.HEALTH.asInt();
         this.health = this.maxHealth;
-        this.hologram = new NecronStoneHologram(this);
         this.action = new NecronStoneAction(this);
+        this.hologram = NecronStoneHologram.create(this);
     }
 
     public UUID getUID() {
@@ -105,25 +102,6 @@ public class NecronStone {
     /*
     HANDLERS
      */
-    public void respawn() {
-        this.respawnAt = null;
-        this.lastDamager = "-";
-        this.health = this.maxHealth;
-        this.hologram.changeType(NecronStoneHologramType.ACTIVE);
-    }
-
-    public void destroy(Player destroyer) {
-        NecronStoneDestroyEvent event = this.action.onDestroy(destroyer);
-        if (event.isCancelled()) {
-            this.health = 1;
-            return;
-        }
-
-        this.health = -1;
-        this.respawnAt = new Date(System.currentTimeMillis() + RESPAWN_AFTER);
-        this.hologram.changeType(NecronStoneHologramType.COOLDOWN);
-    }
-
     public boolean damage(Player damager, int count) {
         this.health -= count;
         this.lastDamager = damager.getName();
@@ -133,5 +111,34 @@ public class NecronStone {
             return true;
         }
         return false;
+    }
+
+    public void respawn() {
+        NecronStoneRespawnEvent event = this.action.onRespawn();
+        if (event.isCancelled()) {
+            this.respawnAt = new Date();
+            return;
+        }
+
+        this.respawnAt = null;
+        this.lastDamager = "-";
+        this.health = this.maxHealth;
+        this.hologram.delete();
+        this.hologram = NecronStoneHologram.create(this);
+    }
+
+    public void destroy(Player destroyer) {
+        NecronStoneDestroyEvent event = this.action.onDestroy(destroyer);
+        if (event.isCancelled()) {
+            this.health = 1;
+            return;
+        }
+
+        long respawnTime = TimeUnit.SECONDS.toMillis(NecronStoneConfigContainer.RESPAWN_AFTER.asInt());
+
+        this.health = -1;
+        this.respawnAt = new Date(System.currentTimeMillis() + respawnTime);
+        this.hologram.delete();
+        this.hologram = NecronStoneHologram.create(this);
     }
 }

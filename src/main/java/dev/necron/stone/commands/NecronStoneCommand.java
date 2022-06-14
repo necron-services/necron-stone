@@ -23,7 +23,7 @@ public class NecronStoneCommand implements HCommandAdapter {
             permissionMessage = "§cYou don't have permission to use this command"
     )
     public void createCommand(Player player, String[] args) {
-        Block targetBlock = player.getTargetBlock((Set<Material>) null, 4);
+        Block targetBlock = player.getTargetBlock((Set<Material>) null, 5);
         if (targetBlock == null) {
             player.sendMessage("§cYou must look at a block!");
             return;
@@ -33,7 +33,6 @@ public class NecronStoneCommand implements HCommandAdapter {
         }
 
         NecronStoneHandler.create(targetBlock.getLocation());
-
         player.sendMessage("§aNecronStone created!");
     }
 
