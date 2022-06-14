@@ -9,6 +9,8 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -56,6 +58,22 @@ public class NecronStoneHandler {
     }
 
 
+    public static Map<Location, NecronStone> getContentSafe() {
+        return new HashMap<>(stoneMap);
+    }
+
+    public static Map<Location, NecronStone> getContent() {
+        return stoneMap;
+    }
+
+    public static Collection<NecronStone> getValuesSafe() {
+        return new ArrayList<>(stoneMap.values());
+    }
+
+    public static Collection<NecronStone> getValues() {
+        return stoneMap.values();
+    }
+
     public static Optional<NecronStone> findByLocation(Location location) {
         return Optional.of(stoneMap.get(location));
     }
@@ -67,7 +85,6 @@ public class NecronStoneHandler {
     public static NecronStone create(Location location) {
         NecronStone stone = new NecronStone(location);
         stone.setRewards(NecronStoneConfigContainer.REWARD_COMMANDS.getValue());
-        stone.getHologram().create();
 
         stoneMap.put(location, stone);
         return stone;

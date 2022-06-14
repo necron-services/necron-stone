@@ -4,6 +4,9 @@ import com.hakan.core.command.HCommandAdapter;
 import com.hakan.core.command.executors.base.BaseCommand;
 import com.hakan.core.command.executors.sub.SubCommand;
 import dev.necron.stone.NecronStoneHandler;
+import dev.necron.stone.NecronStonePlugin;
+import dev.necron.stone.configuration.NecronStoneConfiguration;
+import dev.necron.stone.hologram.NecronStoneHologram;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -43,5 +46,22 @@ public class NecronStoneCommand implements HCommandAdapter {
     )
     public void listCommand(Player player, String[] args) {
 
+    }
+
+    @SubCommand(
+            args = {"reload"},
+            permission = "necronstone.reload",
+            permissionMessage = "§cYou don't have permission to use this command"
+    )
+    public void reloadCommand(Player player, String[] args) {
+        player.sendMessage("§aNecronStone reloading...");
+
+        NecronStoneConfiguration.initialize(NecronStonePlugin.getInstance());
+        NecronStoneHandler.getValues().forEach(stone -> {
+            NecronStoneHologram hologram = NecronStoneHologram.create(stone);
+            stone.setHologram(hologram);
+        });
+
+        player.sendMessage("§aNecronStone reloaded!");
     }
 }

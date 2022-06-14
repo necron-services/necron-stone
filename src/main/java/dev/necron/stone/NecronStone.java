@@ -54,12 +54,16 @@ public class NecronStone {
         return this.maxHealth;
     }
 
+    public NecronStoneAction getAction() {
+        return this.action;
+    }
+
     public NecronStoneHologram getHologram() {
         return this.hologram;
     }
 
-    public NecronStoneAction getAction() {
-        return this.action;
+    public void setHologram(NecronStoneHologram hologram) {
+        this.hologram = hologram;
     }
 
     public int getHealth() {

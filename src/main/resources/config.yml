@@ -17,4 +17,4 @@ hologram-cooldown:
   lines:
     - 'Stone is regenerating!'
     - ' '
-    - 'Remain: %<timePattern=HH:mm>%'
+    - 'Remain: %<timePattern=HH:mm>%%<timePattern=HH:mm:ss>%'

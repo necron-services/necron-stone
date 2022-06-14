@@ -10,7 +10,9 @@ public abstract class NecronStoneHologram {
 
     public static NecronStoneHologram create(NecronStone stone) {
         NecronStoneHologramMode mode = (stone.isAlive()) ? NecronStoneHologramMode.ACTIVE : NecronStoneHologramMode.COOLDOWN;
-        return mode.create(stone);
+        NecronStoneHologram stoneHologram = mode.create(stone);
+        stoneHologram.create();
+        return stoneHologram;
     }
 
 
