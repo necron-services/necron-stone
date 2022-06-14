@@ -3,10 +3,13 @@ package dev.necron.stone.commands;
 import com.hakan.core.command.HCommandAdapter;
 import com.hakan.core.command.executors.base.BaseCommand;
 import com.hakan.core.command.executors.sub.SubCommand;
+import com.hakan.core.utils.yaml.HYaml;
 import dev.necron.stone.NecronStoneHandler;
 import dev.necron.stone.NecronStonePlugin;
 import dev.necron.stone.configuration.NecronStoneConfiguration;
+import dev.necron.stone.configuration.config.NecronStoneConfigContainer;
 import dev.necron.stone.hologram.NecronStoneHologram;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -57,9 +60,17 @@ public class NecronStoneCommand implements HCommandAdapter {
         player.sendMessage("§aNecronStone reloading...");
 
         NecronStoneConfiguration.initialize(NecronStonePlugin.getInstance());
+        NecronStoneConfigContainer.reload();
         NecronStoneHandler.getValues().forEach(stone -> {
-            NecronStoneHologram hologram = NecronStoneHologram.create(stone);
-            stone.setHologram(hologram);
+            stone.changeHologram(NecronStoneHologram.register(stone));
+
+            HYaml dataFile = stone.getDataFile();
+            dataFile.reload();
+            stone.setRewards(dataFile.getStringList("rewards"));
+            stone.setMaxHealth(dataFile.getInt("maxHealth"));
+            stone.setHealth(dataFile.getInt("health"));
+            stone.changeLocation((Location) dataFile.get("location"));
+            stone.getHologram().update();
         });
 
         player.sendMessage("§aNecronStone reloaded!");

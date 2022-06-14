@@ -8,11 +8,9 @@ import java.util.List;
 
 public abstract class NecronStoneHologram {
 
-    public static NecronStoneHologram create(NecronStone stone) {
+    public static NecronStoneHologram register(NecronStone stone) {
         NecronStoneHologramMode mode = (stone.isAlive()) ? NecronStoneHologramMode.ACTIVE : NecronStoneHologramMode.COOLDOWN;
-        NecronStoneHologram stoneHologram = mode.create(stone);
-        stoneHologram.create();
-        return stoneHologram;
+        return mode.create(stone);
     }
 
 
@@ -35,7 +33,7 @@ public abstract class NecronStoneHologram {
 
     public abstract void delete();
 
-    protected abstract double calculateHeight();
+    public abstract Location calculateLocation();
 
-    protected abstract List<String> calculateLines();
+    public abstract List<String> calculateLines();
 }

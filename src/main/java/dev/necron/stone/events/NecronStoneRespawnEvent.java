@@ -1,7 +1,6 @@
 package dev.necron.stone.events;
 
 import dev.necron.stone.NecronStone;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;

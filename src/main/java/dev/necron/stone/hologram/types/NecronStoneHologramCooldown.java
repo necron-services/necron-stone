@@ -23,7 +23,7 @@ public class NecronStoneHologramCooldown extends NecronStoneHologram {
     @Override
     public void create() {
         String id = "necron_stone_hologram_" + super.stone.getUID().toString();
-        Location location = super.stone.getLocation().add(0.5, this.calculateHeight(), 0.5);
+        Location location = this.calculateLocation();
 
         super.hologram = HCore.createHologram(id, location);
         super.hologram.addLines(this.calculateLines());
@@ -46,12 +46,14 @@ public class NecronStoneHologramCooldown extends NecronStoneHologram {
     }
 
     @Override
-    protected double calculateHeight() {
-        return NecronStoneConfigContainer.HOLOGRAM_COOLDOWN_HEIGHT.asDouble();
+    public Location calculateLocation() {
+        Location location = super.stone.getLocation().add(0.5, 0, 0.5);
+        location.setY(location.getY() + NecronStoneConfigContainer.HOLOGRAM_COOLDOWN_HEIGHT.asDouble());
+        return location;
     }
 
     @Override
-    protected List<String> calculateLines() {
+    public List<String> calculateLines() {
         List<String> lines = new ArrayList<>();
 
         List<String> configLines = NecronStoneConfigContainer.HOLOGRAM_COOLDOWN_LINES.getValue();
