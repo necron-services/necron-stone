@@ -43,15 +43,6 @@ public class NecronStoneCommand implements HCommandAdapter {
     }
 
     @SubCommand(
-            args = {"list"},
-            permission = "necronstone.list",
-            permissionMessage = "§cYou don't have permission to use this command"
-    )
-    public void listCommand(Player player, String[] args) {
-
-    }
-
-    @SubCommand(
             args = {"reload"},
             permission = "necronstone.reload",
             permissionMessage = "§cYou don't have permission to use this command"

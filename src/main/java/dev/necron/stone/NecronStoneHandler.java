@@ -71,6 +71,11 @@ public class NecronStoneHandler {
                         }
                     }
                 }));
+
+        HCore.registerEvent(BlockBreakEvent.class)
+                .filter(event -> event.getPlayer().isOp() || event.getPlayer().hasPermission("necronstone.break"))
+                .filter(event -> event.getPlayer().isSneaking())
+                .consume(event -> NecronStoneHandler.findByLocation(event.getBlock().getLocation()).ifPresent(NecronStoneHandler::delete));
     }
 
     public static void uninitialize() {
