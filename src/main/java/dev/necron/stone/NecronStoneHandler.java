@@ -105,8 +105,7 @@ public class NecronStoneHandler {
     }
 
     public static NecronStone create(Location location) {
-        NecronStone stone = new NecronStone(location);
-        stone.setRewards(NecronStoneConfigContainer.REWARD_COMMANDS.getValue());
+        NecronStone stone = new NecronStone(location, NecronStoneConfigContainer.REWARD_COMMANDS.getValue());
         stone.getDatabase().insertAsync();
         stone.getHologram().create();
 
