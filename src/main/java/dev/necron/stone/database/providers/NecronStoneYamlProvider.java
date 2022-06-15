@@ -4,12 +4,14 @@ import com.hakan.core.database.DatabaseProvider;
 import com.hakan.core.utils.yaml.HYaml;
 import dev.necron.stone.NecronStone;
 import dev.necron.stone.NecronStonePlugin;
+import dev.necron.stone.utils.LocationUtil;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 public class NecronStoneYamlProvider extends DatabaseProvider<NecronStone> {
@@ -49,23 +51,33 @@ public class NecronStoneYamlProvider extends DatabaseProvider<NecronStone> {
 
     @Override
     public void insert(@Nonnull NecronStone stone) {
+        Date respawnDate = stone.getRespawnDate();
+
         HYaml yaml = stone.getDataFile();
         yaml.set("uid", stone.getUID().toString());
         yaml.set("maxHealth", stone.getMaxHealth());
-        yaml.set("location", stone.getLocation());
         yaml.set("rewards", stone.getRewards());
+        yaml.set("location", LocationUtil.serialize(stone.getLocation()));
+        yaml.set("health", stone.getHealth());
+        yaml.set("lastDamager", stone.getLastDamager());
+        yaml.set("respawnAt", (respawnDate != null) ? respawnDate.getTime() : null);
+        yaml.set("blockType", stone.getBlockType().toString());
         yaml.save();
     }
 
     @Override
     public void update(@Nonnull NecronStone stone) {
+        Date respawnDate = stone.getRespawnDate();
+
         HYaml yaml = stone.getDataFile();
+        yaml.set("uid", stone.getUID().toString());
+        yaml.set("maxHealth", stone.getMaxHealth());
+        yaml.set("rewards", stone.getRewards());
+        yaml.set("location", LocationUtil.serialize(stone.getLocation()));
         yaml.set("health", stone.getHealth());
         yaml.set("lastDamager", stone.getLastDamager());
-        yaml.set("respawnAt", stone.getRespawnDate());
-        yaml.set("maxHealth", stone.getMaxHealth());
-        yaml.set("location", stone.getLocation());
-        yaml.set("rewards", stone.getRewards());
+        yaml.set("respawnAt", (respawnDate != null) ? respawnDate.getTime() : null);
+        yaml.set("blockType", stone.getBlockType().toString());
         yaml.save();
     }
 

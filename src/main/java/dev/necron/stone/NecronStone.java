@@ -1,14 +1,18 @@
 package dev.necron.stone;
 
+import com.hakan.core.HCore;
 import com.hakan.core.database.DatabaseObject;
 import com.hakan.core.utils.yaml.HYaml;
 import dev.necron.stone.action.NecronStoneAction;
 import dev.necron.stone.configuration.config.NecronStoneConfigContainer;
 import dev.necron.stone.database.NecronStoneDatabase;
+import dev.necron.stone.events.NecronStoneDamageEvent;
 import dev.necron.stone.events.NecronStoneDestroyEvent;
 import dev.necron.stone.events.NecronStoneRespawnEvent;
 import dev.necron.stone.hologram.NecronStoneHologram;
+import dev.necron.stone.utils.LocationUtil;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -29,6 +33,7 @@ public class NecronStone implements DatabaseObject {
     private Date respawnAt;
     private String lastDamager;
     private Location location;
+    private Material blockType;
     private List<String> rewards;
     private NecronStoneHologram hologram;
 
@@ -41,6 +46,7 @@ public class NecronStone implements DatabaseObject {
         this.lastDamager = "-";
         this.location = location;
         this.rewards = rewards;
+        this.blockType = location.getBlock().getType();
         this.maxHealth = NecronStoneConfigContainer.HEALTH.asInt();
         this.health = this.maxHealth;
         this.action = new NecronStoneAction(this);
@@ -51,12 +57,13 @@ public class NecronStone implements DatabaseObject {
 
     public NecronStone(HYaml dataFile) {
         this.uid = UUID.fromString(dataFile.getString("uid"));
+        this.location = LocationUtil.deserialize(dataFile.getString("location"));
+        this.respawnAt = dataFile.isSet("respawnAt") ? new Date(dataFile.getLong("respawnAt")) : null;
         this.lastDamager = dataFile.getString("lastDamager");
-        this.location = (Location) dataFile.get("location");
         this.rewards = dataFile.getStringList("rewards");
+        this.blockType = Material.getMaterial(dataFile.getString("blockType"));
         this.maxHealth = dataFile.getInt("maxHealth");
         this.health = dataFile.getInt("health");
-        this.respawnAt = dataFile.isSet("respawnAt") ? (Date) dataFile.get("respawnAt") : null;
         this.action = new NecronStoneAction(this);
         this.hologram = NecronStoneHologram.register(this);
         this.database = new NecronStoneDatabase(this);
@@ -77,6 +84,10 @@ public class NecronStone implements DatabaseObject {
 
     public int getMaxHealth() {
         return this.maxHealth;
+    }
+
+    public Material getBlockType() {
+        return this.blockType;
     }
 
     public NecronStoneAction getAction() {
@@ -134,6 +145,11 @@ public class NecronStone implements DatabaseObject {
     /*
     HANDLERS
      */
+    public void setBlockType(Material blockType) {
+        this.blockType = blockType;
+        this.addToUpdateList();
+    }
+
     public void setHealth(int health) {
         this.health = health;
         this.addToUpdateList();
@@ -167,8 +183,17 @@ public class NecronStone implements DatabaseObject {
     }
 
     public boolean damage(Player damager, int count) {
-        this.setHealth(this.health - count);
+        NecronStoneDamageEvent event = this.action.onDamage(damager, count);
+        if (event.isCancelled())
+            return false;
+
+        this.setHealth(this.health - event.getDamage());
         this.setLastDamager(damager.getName());
+        this.hologram.update();
+
+        HCore.sendActionBar(damager, NecronStoneConfigContainer.MESSAGE_INFO_BREAK_STONE_ACTIONBAR.asString()
+                .replace("%health%", ((this.health != -1) ? this.health : 0) + "")
+                .replace("%max_health%", this.maxHealth + ""));
 
         if (this.health <= 0) {
             this.destroy(damager);
@@ -188,6 +213,7 @@ public class NecronStone implements DatabaseObject {
         this.lastDamager = "-";
         this.setHealth(this.maxHealth);
         this.changeHologram(NecronStoneHologram.register(this));
+        this.location.getBlock().setType(this.blockType);
     }
 
     public void destroy(Player destroyer) {
@@ -202,5 +228,6 @@ public class NecronStone implements DatabaseObject {
         this.setHealth(-1);
         this.respawnAt = new Date(System.currentTimeMillis() + respawnTime);
         this.changeHologram(NecronStoneHologram.register(this));
+        this.location.getBlock().setType(Material.valueOf(NecronStoneConfigContainer.BLOCK_TYPE_AFTER_DESTROY.asString()));
     }
 }

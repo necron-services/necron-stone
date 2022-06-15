@@ -1,6 +1,7 @@
 package dev.necron.stone.action;
 
 import dev.necron.stone.NecronStone;
+import dev.necron.stone.events.NecronStoneDamageEvent;
 import dev.necron.stone.events.NecronStoneDestroyEvent;
 import dev.necron.stone.events.NecronStoneRespawnEvent;
 import org.bukkit.Bukkit;
@@ -16,6 +17,12 @@ public class NecronStoneAction {
 
     public NecronStone getStone() {
         return this.stone;
+    }
+
+    public NecronStoneDamageEvent onDamage(Player damager, int damage) {
+        NecronStoneDamageEvent event = new NecronStoneDamageEvent(this.stone, damager, damage);
+        Bukkit.getPluginManager().callEvent(event);
+        return event;
     }
 
     public NecronStoneRespawnEvent onRespawn() {

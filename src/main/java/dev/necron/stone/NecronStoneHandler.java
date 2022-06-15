@@ -1,18 +1,23 @@
 package dev.necron.stone;
 
 import com.hakan.core.HCore;
+import com.hakan.core.particle.HParticle;
 import dev.necron.stone.commands.NecronStoneCommand;
 import dev.necron.stone.configuration.NecronStoneConfiguration;
 import dev.necron.stone.configuration.config.NecronStoneConfigContainer;
 import dev.necron.stone.database.NecronStoneDatabase;
+import dev.necron.stone.listeners.NecronStoneListener;
+import dev.necron.stone.utils.LocationUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -47,34 +52,25 @@ public class NecronStoneHandler {
                 .run(() -> stoneMap.values().forEach(stone -> {
                     if (!stone.isAlive())
                         stone.getHologram().update();
-                    if (!stone.isAlive() && stone.getRemainTime() <= 0)
+                    if (!stone.isAlive() && stone.getRemainTime() <= 0) {
                         stone.respawn();
+
+                        Bukkit.broadcastMessage(NecronStoneConfigContainer.MESSAGE_INFO_RESPAWN_STONE_BROADCAST.asString()
+                                .replace("%location%", LocationUtil.serialize(stone.getLocation()).replace(":", ",")));
+
+                        List<Player> show = new ArrayList<>(stone.getLocation().getWorld().getPlayers());
+                        HParticle particle1 = new HParticle("PORTAL", 250, 0.1, new Vector(1.2, 1.2, 1.2));
+                        HCore.playParticle(show, stone.getLocation().add(0.5, 0.5, 0.5), particle1);
+                    }
                 }));
 
 
         //EVENT
-        HCore.registerEvent(BlockBreakEvent.class)
-                .consume(event -> NecronStoneHandler.findByLocation(event.getBlock().getLocation()).ifPresent(stone -> {
-                    event.setCancelled(true);
-
-                    Player player = event.getPlayer();
-                    if (!stone.isAlive())
-                        return;
-
-                    boolean isFinished = stone.damage(player, 1);
-                    stone.getHologram().update();
-
-                    if (isFinished) {
-                        for (String rewardCommand : stone.getRewards()) {
-                            String command = rewardCommand.replace("%player%", player.getName());
-                            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
-                        }
-                    }
-                }));
+        HCore.registerListeners(new NecronStoneListener());
 
         HCore.registerEvent(BlockBreakEvent.class)
-                .filter(event -> event.getPlayer().isOp() || event.getPlayer().hasPermission("necronstone.break"))
                 .filter(event -> event.getPlayer().isSneaking())
+                .filter(event -> event.getPlayer().isOp() || event.getPlayer().hasPermission("necronstone.break"))
                 .consume(event -> NecronStoneHandler.findByLocation(event.getBlock().getLocation()).ifPresent(NecronStoneHandler::delete));
     }
 

@@ -3,6 +3,7 @@ settings:
   default-respawn-after: 120 #broken necron stone will regenerate after 120 seconds
   default-reward-commands:
     - 'give %player% diamond 1' #give a diamond to player
+  block-type-after-destroy: 'IRON_BLOCK' #block type after necron stone broken
 
 hologram-active:
   height: 1.5
@@ -17,4 +18,9 @@ hologram-cooldown:
   lines:
     - 'Stone is regenerating!'
     - ' '
-    - 'Remain: %<timePattern=HH:mm>%%<timePattern=HH:mm:ss>%'
+    - 'Remain: %<timePattern=HH:mm:ss>%'
+
+messages:
+  info-destroy-stone-broadcast: '%player% broke the stone at %location%!'
+  info-respawn-stone-broadcast: 'stone at %location% respawned!'
+  info-break-stone-actionbar: 'You broke the stone and its health is %health%/%max_health%'

@@ -11,12 +11,17 @@ public enum NecronStoneConfigContainer {
     HEALTH("settings.default-health", 100),
     RESPAWN_AFTER("settings.default-respawn-after", 120),
     REWARD_COMMANDS("settings.default-reward-commands", new ArrayList<>()),
+    BLOCK_TYPE_AFTER_DESTROY("settings.block-type-after-destroy", "IRON_BLOCK"),
 
     HOLOGRAM_ACTIVE_HEIGHT("hologram-active.height", 0.5),
     HOLOGRAM_ACTIVE_LINES("hologram-active.lines", new ArrayList<>()),
 
     HOLOGRAM_COOLDOWN_HEIGHT("hologram-cooldown.height", 0.5),
     HOLOGRAM_COOLDOWN_LINES("hologram-cooldown.lines", new ArrayList<>()),
+
+    MESSAGE_INFO_DESTROY_STONE_BROADCAST("messages.info-destroy-stone-broadcast", ""),
+    MESSAGE_INFO_RESPAWN_STONE_BROADCAST("messages.info-respawn-stone-broadcast", ""),
+    MESSAGE_INFO_BREAK_STONE_ACTIONBAR("messages.info-break-stone-actionbar", ""),
     ;
 
 
