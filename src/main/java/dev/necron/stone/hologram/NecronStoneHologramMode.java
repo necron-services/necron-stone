@@ -1,8 +1,9 @@
 package dev.necron.stone.hologram;
 
 import dev.necron.stone.NecronStone;
-import dev.necron.stone.hologram.types.NecronStoneHologramActive;
-import dev.necron.stone.hologram.types.NecronStoneHologramCooldown;
+import dev.necron.stone.hologram.state.NecronHologramState;
+import dev.necron.stone.hologram.state.NecronStoneHologramActive;
+import dev.necron.stone.hologram.state.NecronStoneHologramCooldown;
 
 public enum NecronStoneHologramMode {
 
@@ -11,13 +12,13 @@ public enum NecronStoneHologramMode {
     ;
 
 
-    private final Class<? extends NecronStoneHologram> hologramClass;
+    private final Class<? extends NecronHologramState> hologramClass;
 
-    NecronStoneHologramMode(Class<? extends NecronStoneHologram> hologramClass) {
+    NecronStoneHologramMode(Class<? extends NecronHologramState> hologramClass) {
         this.hologramClass = hologramClass;
     }
 
-    public NecronStoneHologram create(NecronStone stone) {
+    public NecronHologramState create(NecronStone stone) {
         try {
             return this.hologramClass
                     .getConstructor(NecronStone.class)

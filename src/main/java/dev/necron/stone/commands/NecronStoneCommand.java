@@ -8,7 +8,6 @@ import dev.necron.stone.NecronStoneHandler;
 import dev.necron.stone.NecronStonePlugin;
 import dev.necron.stone.configuration.NecronStoneConfiguration;
 import dev.necron.stone.configuration.config.NecronStoneConfigContainer;
-import dev.necron.stone.hologram.NecronStoneHologram;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -53,7 +52,7 @@ public class NecronStoneCommand implements HCommandAdapter {
         NecronStoneConfiguration.initialize(NecronStonePlugin.getInstance());
         NecronStoneConfigContainer.reload();
         NecronStoneHandler.getValues().forEach(stone -> {
-            stone.changeHologram(NecronStoneHologram.register(stone));
+            stone.getHologram().setMode(stone.getHologram().getMode());
 
             HYaml dataFile = stone.getDataFile();
             dataFile.reload();

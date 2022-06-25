@@ -1,39 +1,57 @@
 package dev.necron.stone.hologram;
 
-import com.hakan.core.hologram.HHologram;
 import dev.necron.stone.NecronStone;
+import dev.necron.stone.hologram.state.NecronHologramState;
+import dev.necron.stone.hologram.state.NecronStoneHologramActive;
 import org.bukkit.Location;
 
 import java.util.List;
 
-public abstract class NecronStoneHologram {
+public class NecronStoneHologram {
 
-    public static NecronStoneHologram register(NecronStone stone) {
-        NecronStoneHologramMode mode = (stone.isAlive()) ? NecronStoneHologramMode.ACTIVE : NecronStoneHologramMode.COOLDOWN;
-        return mode.create(stone);
-    }
-
-
-    protected final NecronStone stone;
-    protected HHologram hologram;
+    private final NecronStone stone;
+    private NecronHologramState state;
 
     public NecronStoneHologram(NecronStone stone) {
         this.stone = stone;
+        this.state = new NecronStoneHologramActive(stone);
     }
 
     public NecronStone getStone() {
         return this.stone;
     }
 
-    public abstract void create();
+    public void create() {
+        this.state.create();
+    }
 
-    public abstract void update();
+    public void update() {
+        this.state.update();
+    }
 
-    public abstract void move(Location location);
+    public void move(Location location) {
+        this.state.move(location);
+    }
 
-    public abstract void delete();
+    public void delete() {
+        this.state.delete();
+    }
 
-    public abstract Location calculateLocation();
+    public Location calculateLocation() {
+        return this.state.calculateLocation();
+    }
 
-    public abstract List<String> calculateLines();
+    public List<String> calculateLines() {
+        return this.state.calculateLines();
+    }
+
+    public NecronStoneHologramMode getMode() {
+        return this.state.getMode();
+    }
+
+    public void setMode(NecronStoneHologramMode mode) {
+        this.state.delete();
+        this.state = mode.create(this.stone);
+        this.state.create();
+    }
 }

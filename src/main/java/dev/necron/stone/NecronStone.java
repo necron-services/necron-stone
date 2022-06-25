@@ -10,6 +10,7 @@ import dev.necron.stone.events.NecronStoneDamageEvent;
 import dev.necron.stone.events.NecronStoneDestroyEvent;
 import dev.necron.stone.events.NecronStoneRespawnEvent;
 import dev.necron.stone.hologram.NecronStoneHologram;
+import dev.necron.stone.hologram.NecronStoneHologramMode;
 import dev.necron.stone.utils.LocationUtil;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -50,7 +51,7 @@ public class NecronStone implements DatabaseObject {
         this.maxHealth = NecronStoneConfigContainer.HEALTH.asInt();
         this.health = this.maxHealth;
         this.action = new NecronStoneAction(this);
-        this.hologram = NecronStoneHologram.register(this);
+        this.hologram = new NecronStoneHologram(this);
         this.database = new NecronStoneDatabase(this);
         this.dataFile = HYaml.create(NecronStonePlugin.getInstance().getDataFolder() + "/data/" + this.uid + ".yml");
     }
@@ -65,7 +66,7 @@ public class NecronStone implements DatabaseObject {
         this.maxHealth = dataFile.getInt("maxHealth");
         this.health = dataFile.getInt("health");
         this.action = new NecronStoneAction(this);
-        this.hologram = NecronStoneHologram.register(this);
+        this.hologram = new NecronStoneHologram(this);
         this.database = new NecronStoneDatabase(this);
         this.dataFile = dataFile;
     }
@@ -176,10 +177,8 @@ public class NecronStone implements DatabaseObject {
         this.addToUpdateList();
     }
 
-    public void changeHologram(NecronStoneHologram hologram) {
-        this.hologram.delete();
-        this.hologram = hologram;
-        this.hologram.create();
+    public void changeHologramMode(NecronStoneHologramMode mode) {
+        this.hologram.setMode(mode);
     }
 
     public boolean damage(Player damager, int count) {
@@ -212,7 +211,7 @@ public class NecronStone implements DatabaseObject {
         this.respawnAt = null;
         this.lastDamager = "-";
         this.setHealth(this.maxHealth);
-        this.changeHologram(NecronStoneHologram.register(this));
+        this.hologram.setMode(NecronStoneHologramMode.ACTIVE);
         this.location.getBlock().setType(this.blockType);
     }
 
@@ -227,7 +226,7 @@ public class NecronStone implements DatabaseObject {
 
         this.setHealth(-1);
         this.respawnAt = new Date(System.currentTimeMillis() + respawnTime);
-        this.changeHologram(NecronStoneHologram.register(this));
+        this.hologram.setMode(NecronStoneHologramMode.COOLDOWN);
         this.location.getBlock().setType(Material.valueOf(NecronStoneConfigContainer.BLOCK_TYPE_AFTER_DESTROY.asString()));
     }
 }
